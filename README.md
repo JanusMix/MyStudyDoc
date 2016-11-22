@@ -1,6 +1,6 @@
 # MyStudyDoc
-This repository stores all my personal study journal.
+This repository stores all my **personal** study journal.
 
-All folder means obviously.
+All folder means obviously.I'll update this doc persistently.
 
-##All rights reserved by JanusMix
+## All rights reserved by JanusMix.
