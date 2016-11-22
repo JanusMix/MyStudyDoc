@@ -149,10 +149,10 @@ PS D:\> new-variable name -value "me" -description "This is my name"
  
 其中大部分都只能读，不能改。下面是几个比较有意思的自动化变量:
 
- - $$ 包含会话所收到的最后一行中的最后一个令牌
- - $? 包含最后一个操作的执行状态。如果成功则为TRUE
- - $^ 包含会话所收到的最后一行中的第一个令牌
- - $_ 包含管道对象中的当前对象
+ - $$    包含会话所收到的最后一行中的最后一个令牌
+ - $?    包含最后一个操作的执行状态。如果成功则为TRUE
+ - $^    包含会话所收到的最后一行中的第一个令牌
+ - $_    包含管道对象中的当前对象
  - $args 包含由未声明参数和/或传递给函数、脚本或脚本块的参数值组成的数组。在创建函数时可以声明参数，方法是使用param关键字或在函数名称后添加以圆括号括起、逗号分隔的参数列表。
  
 等等还有很多。了解到这里之后我们可以把上面查询所有可用的别名的例子修改一下：
@@ -162,6 +162,161 @@ PS D:\> dir alias: | where {$_.definition.startswith("remove")}
 ```
 
 就可以查看所有`defination`以remove开头的别名了，这里的`$_`指的就是循环所有别名的每一个。循环的事情我们以后再说。
+
+####环境变量
+传统的控制台都是使用环境变量进行操作，对于Ps更重要，因为它包括了许多操作系统的细节信息。环境变量的更新在重启Ps后也会保存修改。
+
+Ps所有的环境变量都存储在`env:`虚拟驱动中，也就是说它可以像其它变量那样使用。比如可以把它插入到文本中：
+
+```bash
+PS D:\> "My computer name is $env:COMPUTERNAME"
+My computer name is xxxx
+```
+
+创建环境变量也是跟其它变量一样，只需指定`env:`即可。也可以删除和更新。
+
+```bash
+PS D:\> $env:TestVar1="This is my environment variable"
+```
+
+这样直接操作不会对系统环境变量产生任何影响，因为它只是系统环境变量的一个投影。如果想要使其更新到机器上，需要使用.NET方法：
+
+```bash
+PS D:\> [environment]::SetEnvironmentvariable("Path", ";c:\powershellscript", "User")
+```
+
+####驱动器变量
+Ps中所有不是我们自己定义的变量都属于驱动器变量(比如环境变量),它的前缀只是提供给我们一个可以访问信息的虚拟驱动器，例如env:windir。像env:只是驱动器上的一个”文件”，我们通过$访问它，就会返回“文件”的内容。
+
+通过驱动器可以直接访问文件路径，也支持物理驱动器，必须放到{}中。但是如果{}中有返回值变量就会无法识别，如：
+
+```bash
+PS D:\> Invoke-Expression "${$env:HOMEDRIVE/Powershell/ping.bat}"
+```
+
+此时可以在第一个$前加上\`来转义它，就可以了。
+
+####变量的作用域
+Ps中提供了4中变量作用域：
+
+ - $global  全局变量，在所有作用域中有效，如果在脚本中设置了，即使脚本执行完毕也会依然存在
+ - $private 私有变量，只在当前作用域有效，不能贯穿到其它作用域
+ - $script  脚本变量，只在脚本中有效，包括脚本中的函数，脚本执行完毕就会回收
+ - $local   默认变量，可以省略修饰符，在当前作用域有效，其它作用域对它只读
+
+当我们打开一个控制台的时候只有一个作用域，当调用一个函数时才会给它分配一个新的作用域，在控制台创建了一个变量后使用上面4个修饰符查找其实访问的是同一个。如果想要更改变量的可见性，如使调用的脚本共享当前作用域，可以在调用时前面加上`. `点和空格禁用作用域。
+
+```bash
+PS D:\> . .\test.ps1
+```
+
+####变量的类型
+我们在给一个变量赋值的时候Ps会给它分配一个最佳的数据类型，这种类型自适应也称作“弱类型”,虽然使用起来方便，但是也会有一些限制，甚至危险。定义变量时也可以为变量指定类型，前面加上[type]即可。如：
+
+```bash
+PS D:\> [byte]$b=101
+```
+
+手动地定义类型的一个重要原因是每个特殊的数据类型都有自己的特殊命令和特殊方法。如：
+
+```bash
+PS D:\> [DateTime]$date="2012-12-20 12:45:00"
+PS> $date
+
+2012年12月20日 12:45:00
+
+PS D:\> $date.DayOfWeek
+Thursday
+PS D:\> $date.DayOfYear
+355
+PS D:\> $date.AddDays(-10)
+
+2012年12月10日 12:45:00
+```
+
+会发现.NET中有的方法这里面都支持。Ps默认支持的.NET类型有：
+> [array],[bool],[byte],[char],[datetime],[decimal],[double],[guid],[hashtable],[int16],[int32],[int],[int64],[long],[nullable],
+> [psobject],[regex],[sbyte].[scriptblock],[single],[float],[string],[switch],[timespan],[type],[uint16],[uint32],[uint64],[ XML ]
+
+####变量的后台管理
+在Ps中创建一个变量，会在后台生成一个PSVariable对象，这个对象不仅包含变量的值，也包含变量的其它信息，例如”只写保护”这样的描述。我们在声明一个变量时只是指明了它的名字和值，其实还有许多其他的属性。我们可以这样查看`a`变量所有的属性:
+
+```bash
+PS D:\> Get-Variable a | fl *
+
+Name        : a
+Description :
+Value       : 2011/12/8 17:52:02
+Visibility  : Public
+Module      :
+ModuleName  :
+Options     : None
+Attributes  : {}
+```
+
+变量的`options`是一个枚举值，包含:
+ - None      默认设置
+ - ReadOnly  变量只读，但是可以通过-Force 选项更新
+ - Constant  常量一旦声明，在当前控制台不能更新
+ - Private   只在当前作用域可见，不能贯穿到其它作用域
+ - AllScope  全局，可以贯穿于任何作用域
+ 
+变量的`attributes`表明变量的类型，如果为空，说明可以存放所有类型的数据。一旦`attributes`确定了就不能随便存放数据了。
+
+变量PSVariable对象的Attributes属性能够存储一些附件条件，例如限制变量的长度，这样在变量重新赋值时就会进行验证，下面演示如何限制一个字符串变量的长度为位于2-5之间:
+
+```bash
+PS D:\> $var = "jianren"
+PS D:\> $condition = new-object system.management.automation.validatelengthattribute -argumentlist 2,10
+PS D:\> (get-variable var).attributes.add($condition)
+PS D:\> $var = "jijasd"
+PS D:\> $var = "1"
+无法验证此变量，因为值 1 不是变量 var 的有效值。
+所在位置 行:1 字符: 1
++ $var = "1"
++ ~~~~~~~~~~
+    + CategoryInfo          : MetadataError: (:) [], ValidationMetadataException
+    + FullyQualifiedErrorId : ValidateSetFailure
+
+PS D:\> $var = "nasdmamdl"
+PS D:\> $var = "nasdmamdlasdh"
+无法验证此变量，因为值 nasdmamdlasdh 不是变量 var 的有效值。
+所在位置 行:1 字符: 1
++ $var = "nasdmamdlasdh"
++ ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : MetadataError: (:) [], ValidationMetadataException
+    + FullyQualifiedErrorId : ValidateSetFailure
+
+PS D:\>
+```
+
+有5种常用的变量内容验证：
+ - ValidateNotNullAttribute         限制变量不能为空
+ - ValidateNotNullOrEmptyAttribute  限制变量不等为空，不能为空字符串，不能为空集合
+ - ValidatePatternAttribute         限制变量要满足制定的正则表达式
+ - ValidateRangeAttribute           限制变量的取值范围
+ - ValidateSetAttribute             限制变量的取值集合
+ 
+下面为使用的一个例子：
+ 
+```bash
+PS> $email="test@mossfly.com"
+PS> $con=New-Object System.Management.Automation.ValidatePatternAttribute "b[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}b"
+PS> (Get-Variable email).Attributes.Add($con)
+PS> $email="abc@abc.com"
+PS> $email="abc@mossfly.com"
+PS> $email="author@gmail.com"
+PS> $email="www@mossfly"
+The variable cannot be validated because the value www@mossfly is not a valid value for the email variable.
+At line:1 char:7
++ $email <<<< ="www@mossfly"
+    + CategoryInfo          : MetadataError: (:) [], ValidationMetadataException
+    + FullyQualifiedErrorId : ValidateSetFailure
+```
+
+
+
+
 
  
 
