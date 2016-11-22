@@ -1,0 +1,108 @@
+#Study in Spring 
+> 企业级JavaBean    (Enterprise JavaBean,EJB)  
+
+> 简单老式Java对象   (Plain Old Java Object,POJO) 
+
+> 依赖注入          (Dependency Injection,DI) 
+
+> 面向切面编程       (Aspect-Oriented Programming,AOP)
+
+***为什么使用DI***
+
+>依赖注入(Dependency Injection)和控制反转(Inversion of Control)是同一个概念。具体含义是:当某个角色(可能是一个Java实例，调用者)需要另一个角(另
+>一个Java实例，被调用者)的协助时，在 传统的程序设计过程中，通常由调用者来创建被调用者的实例。但在Spring里，创建被调用者的工作不再由调用者来完成，因此
+>称为控制反转;创建被调用者 实例的工作通常由Spring容器来完成，然后注入调用者，因此也称为依赖注入。
+
+任何一个有实际应用的程序都会由许多类而组成，这些类之间相互协作来完成特定的业务逻辑。按照传统的做法，每个对象负责管理与自己协作的对象的引用，会导致高度
+耦合和难以测试的代码。紧密耦合的代码难以测试，一定程度的耦合又是必须的，完全没有耦合的代码什么也做不了，应当小心谨慎地进行管理。如下面的代码：
+
+```java
+package com.springinaction.knights;
+
+public class DamelRescuingKnight implements Knight{
+
+  private RescueDamselQuest quest;
+  
+  public DamelRescuingKnight(){
+    this.quest = new RescueDamselQuest();
+  }
+  
+  public void embarkOnQuest(){
+    quest.embark();
+  }
+  
+}
+```
+
+此程序中构造方法与RescueDamselQuest紧耦合，在编写测试中，必须保证embarkOnQuest()方法被调用时，embark()方法也要被调用。可以通过下面的构造器注入的
+方式解决:
+
+```java
+package com.springinaction.knights;
+
+public class BraveKnight implements Knight{
+
+  private Quest quest;
+  
+  public BraveKnight(Quest quest){
+    this.quest = quest;
+  }
+  
+  public void embarkOnQuest(){
+    quest.embark();
+  }
+  
+}
+```
+
+这里的BraveKnight没有与任何特定的Quest实现发生耦合。对它来说，被要求挑战的探险任务只要实现了Quest接口。这就是DI所带来的最大收益——松耦合。
+
+***为什么使用AOP***
+
+DI能够让相互协作的软件组件保持松散耦合，而面向切面编程允许把遍布应用各处的功能分离出来形成可重用的组件。系统由许多不同的组件组成，每一个组件各负责一块特定功能。除了实现自身的核心功能之外，这些组件还经常承担额外的职责，诸如日志，事务管理和安全服务等。如果将这些关注点分散到多个组件中去，代码将会带来双重的复杂性。AOP能够使这些服务模块化，并以声明的方式将他们应用到它们需要影响的组件中去，实现服务关注点与核心业务相分离。**总之，AOP能够确保POJO的简单性**。
+
+##装配Bean
+在Spring中，对象无需自己查找或创建与其所关联的其他对象。相反，容器负责把需要相互协作的对象引用赋予各个对象。创建应用对象之间协作关系的行为叫**装配**（wiring），这也是依赖注入的本质。
+
+Spring提供了三种主要的装配机制：
+
+- 在XML中进行显式配置
+- 在Java中进行显示配置
+- 隐式的bean发现机制和自动装配
+
+选择只需要适合本人或项目即可。尽量使用自动配置的机制，显示配置越少越好。
+
+###创建可被发现的Bean
+创建一个基类，他的内容并不重要，在类上使用`@Component`注解。表明该类会作为组件类，并告知Spring为这个类创建Bean。不过组件扫描默认是不启用的。所以我们还需要显示配置一下Spring，从而命令它去寻找带有`@Component`注解的类，为其创建Bean。如下为最简洁的一种配置：
+
+```java
+@Configuration
+@ComponentScan
+public class Config{
+}
+```
+
+如果没有其他配置的话，`@ComponentScan`默认扫描与配置类相同的包。Spring会扫描这个包以及这个包下的所有子包，查找带有`@Componeent`的类。
+
+如果想要测试上面的方法，可以在jUnit中添加`@ContextConfiguration(classes=config.class)`来加载配置。
+
+###为组件扫描的Bean命名
+Spring上下文中所有的bean都会给定一个id，默认是类名第一个字母小写。如果想要手动为他设置名字，可以使用`@Component("realConfig")`。
+
+###设置组件扫描的基础包
+
+刚才我们没有为`@ComponentScan`设置任何属性，按照默认规则，他会以配置类所在的包作为基础包来扫描组件。如果想要扫描不同的包，可以像`@ComponentScan("soundsystem")`这样指明包的名称。如果要清晰的表明设置的是基础包，可以通过`basePackages`属性配置。`@ComponentScan(basePackages="soundsystem")`，如果要设置多个基础包，使用`basePackages={"",""}`即可。除了将包设置为简单的String类型之外，还可以指定包中所包含的类和接口：`@ComponentScan(basePackageClasses=CDPlayer.class)`。
+
+###通过为Bean添加注解实现自动装配
+简单来说，自动装配就是让Spring自动满足bean依赖的一种方法，在满足依赖的过程中会在Spring应用上下文中寻找匹配某个bean需求的其他bean。为了声明要进行自动装配，可以借助`@AutoWired`注解。如：
+
+```java
+@AutoWired
+public CDPlayer(CompactDisc cd){
+  this.cd = cd;
+}
+```
+
+这表明当Spring创建`CDPlayer`bean的时候，会通过这个构造器来进行实例化并且传入一个可设置给`CompactDisc`类型的Bean。
+
+如果没有匹配的bean，那个在应用上下文创建的时候，Spring会抛出一个异常，为了避免，可以将`@AutoWired`的`required`属性设置为`false`。此时，如果不在代码中进行null检查，会出现NullPointerException的异常。但如果有多个bean进行自动装配，Spring会抛出一个异常，表明没有明确指定要选择哪个bean进行自动装配。
