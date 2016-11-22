@@ -72,13 +72,23 @@ PS D:\> tc localhost
 ###执行文件和脚本
 Ps中直接输入文件名无法执行此文件，需要前面加./，但是在执行本地脚本时会默认禁用执行脚本。可以以如下方式解决：
 
- - 以管理员身份运行Ps
- - 输入set-executionpolicy
- - 输入remotesigned
- - 输入y
- 
+以管理员身份运行Ps
+
+```bash
+PS D:\> set-executionpolicy
+
+位于命令管道位置 1 的 cmdlet Set-ExecutionPolicy
+请为以下参数提供值:
+ExecutionPolicy: remotesigned
+
+执行策略更改
+执行策略可帮助你防止执行不信任的脚本。更改执行策略可能会产生安全风险，如
+http://go.microsoft.com/fwlink/?LinkID=135170 中的 about_Execution_Policies 帮助主题所述。是否要更改执行策略?
+[Y] 是(Y)  [A] 全是(A)  [N] 否(N)  [L] 全否(L)  [S] 暂停(S)  [?] 帮助 (默认值为“N”): y
+```
  
 set-executionpolicy有四种值：
+
  - Restricted   默认，不允许任何脚本运行
  - AllSigned    只能运行经过数字签名的脚本
  - RemoteSigned 运行本地的脚本不需要数字签名，但是运行从网络上下载的脚本就必须要有数字签名
