@@ -106,3 +106,7 @@ public CDPlayer(CompactDisc cd){
 这表明当Spring创建`CDPlayer`bean的时候，会通过这个构造器来进行实例化并且传入一个可设置给`CompactDisc`类型的Bean。
 
 如果没有匹配的bean，那个在应用上下文创建的时候，Spring会抛出一个异常，为了避免，可以将`@AutoWired`的`required`属性设置为`false`。此时，如果不在代码中进行null检查，会出现NullPointerException的异常。但如果有多个bean进行自动装配，Spring会抛出一个异常，表明没有明确指定要选择哪个bean进行自动装配。
+
+
+
+**工作之余会持续更新**
