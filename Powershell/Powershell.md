@@ -1,4 +1,4 @@
-#Powershell
+# Powershell
 > Powershell(以下简称Ps)是运行在windows机器上实现系统和应用程序管理自动化的命令行脚本环境。微软之所以把它前面加上power不是没有原因的，是因为它真的十分强大。
 > 不单单是继承了Linux的bash和Windows的cmd，而且支持了.NET对象，易用性和可读性位于所有Shell之首不足为过。虽然Python远比Ps强大，不过总有些东西是Python
 > 无法替代的，学点总是没有坏处。
@@ -7,7 +7,7 @@
 
 参考[http://www.pstips.net/powershell-online-tutorials/](http://www.pstips.net/powershell-online-tutorials/) 网站进行学习，挑选比较重要易忘知识点如下罗列。
 
-###管道
+### 管道
 使用 | 可以把上一条命令的输出作为下一条命令的输入，如：
 
 ```bash
@@ -16,21 +16,21 @@ PS D:\>ls | sort -Descending Name | Format-Table Name,Mode
 
 可以通过`ls`获取当前目录的所有文件信息，然后通过`Sort -Descending`对文件信息按照Name降序排列，最后将排序好的文件的Name和Mode格式化成Table输出。
 
-###重定向
+### 重定向
 可以将命令的输出保存到文件中，'>'为覆盖,'>>'为追加。
 
-###数学运算
+### 数学运算
 可以直接在命令行输入数学公式当作计算器使用，除了基本运算符还可以识别KB TB等计算机存储符号。
 
-###执行外部命令
+### 执行外部命令
 Ps可以像cmd一样执行外部命令，如使用`netstat`查看网络端口状态，`ipconfig`查看网络配置，`route print`查看路由信息，就跟在win+R输入得到的东西一样。
 
-###Cmdlets
+### Cmdlets
 Cmdlets是Ps的内部命令，由一个动词一个名词组成，数量相当多，需要用时现查即可。
 
-###Alias
+### Alias
 那么多的Cmdlets记不住怎么办，而且记住了敲那么长也很麻烦，别名可以大致解决这个问题。Ps内置了许多别名，大多都来源于bash和cmd，如ls和dir，对应cmdlet的`Get-ChildItem`。
-###查询别名真实命令
+### 查询别名真实命令
 
 ```bash
 PS D:\>get-alias -name ls
@@ -40,13 +40,13 @@ Alias           ls                                                  Get-ChildIte
 ```
 对了，Ps对大小写不敏感，大小写取决于个人习惯即可。
 
-###查询所有可用别名
+### 查询所有可用别名
 
 ```bash
 PS D:\>dir alias:
 ```
 
-###创建自己的别名
+### 创建自己的别名
 如给notepad创建一个别名edit
 
 ```bash
@@ -69,7 +69,7 @@ PS D:\> tc localhost
 ```
 将经常使用的参数count 2固化到别名中，`$args`为参数的占位符，使用时要加上参数。
 
-###执行文件和脚本
+### 执行文件和脚本
 Ps中直接输入文件名无法执行此文件，需要前面加./，但是在执行本地脚本时会默认禁用执行脚本。可以以如下方式解决：
 
 以管理员身份运行Ps
@@ -96,7 +96,7 @@ set-executionpolicy有四种值：
 
 这样就可以执行脚本了。
 
-###变量
+### 变量
 
 和Python一样，变量使用不需要声明类型，可以自动创建，前面以美元符$开头，如果变量名中有特殊字符，可以用{}括起来。因为Ps是支持对象的，所以可以使用任何类型赋值给变量。支持链式赋值和数值交换。
 
@@ -121,7 +121,7 @@ true
 
 变量可以在退出Ps时自动删除，非要手动删除的话可以像文件那样删除它。
 
-####变量写保护
+#### 变量写保护
 在使用new-variable创建变量时，可以使用`option`选项给变量加上只读属性，这样就不能给变量重新赋值了。
 
 ```bash
@@ -140,7 +140,7 @@ PS D:\> new-variable num -value "strong" -option constant
 PS D:\> new-variable name -value "me" -description "This is my name"
 ```
 
-####自动化变量
+#### 自动化变量
 所谓自动化变量就是打开Ps自动加载的变量，这些变量存放的内容一般是：
 
  - 用户信息：如用户的根目录`$home`
@@ -163,7 +163,7 @@ PS D:\> dir alias: | where {$_.definition.startswith("remove")}
 
 就可以查看所有`defination`以remove开头的别名了，这里的`$_`指的就是循环所有别名的每一个。循环的事情我们以后再说。
 
-####环境变量
+#### 环境变量
 传统的控制台都是使用环境变量进行操作，对于Ps更重要，因为它包括了许多操作系统的细节信息。环境变量的更新在重启Ps后也会保存修改。
 
 Ps所有的环境变量都存储在`env:`虚拟驱动中，也就是说它可以像其它变量那样使用。比如可以把它插入到文本中：
@@ -185,7 +185,7 @@ PS D:\> $env:TestVar1="This is my environment variable"
 PS D:\> [environment]::SetEnvironmentvariable("Path", ";c:\powershellscript", "User")
 ```
 
-####驱动器变量
+#### 驱动器变量
 Ps中所有不是我们自己定义的变量都属于驱动器变量(比如环境变量),它的前缀只是提供给我们一个可以访问信息的虚拟驱动器，例如env:windir。像env:只是驱动器上的一个”文件”，我们通过$访问它，就会返回“文件”的内容。
 
 通过驱动器可以直接访问文件路径，也支持物理驱动器，必须放到{}中。但是如果{}中有返回值变量就会无法识别，如：
@@ -196,7 +196,7 @@ PS D:\> Invoke-Expression "${$env:HOMEDRIVE/Powershell/ping.bat}"
 
 此时可以在第一个$前加上\`来转义它，就可以了。
 
-####变量的作用域
+#### 变量的作用域
 Ps中提供了4中变量作用域：
 
  - $global  全局变量，在所有作用域中有效，如果在脚本中设置了，即使脚本执行完毕也会依然存在
@@ -210,7 +210,7 @@ Ps中提供了4中变量作用域：
 PS D:\> . .\test.ps1
 ```
 
-####变量的类型
+#### 变量的类型
 我们在给一个变量赋值的时候Ps会给它分配一个最佳的数据类型，这种类型自适应也称作“弱类型”,虽然使用起来方便，但是也会有一些限制，甚至危险。定义变量时也可以为变量指定类型，前面加上[type]即可。如：
 
 ```bash
@@ -238,7 +238,7 @@ PS D:\> $date.AddDays(-10)
 > [array],[bool],[byte],[char],[datetime],[decimal],[double],[guid],[hashtable],[int16],[int32],[int],[int64],[long],[nullable],
 > [psobject],[regex],[sbyte].[scriptblock],[single],[float],[string],[switch],[timespan],[type],[uint16],[uint32],[uint64],[ XML ]
 
-####变量的后台管理
+#### 变量的后台管理
 在Ps中创建一个变量，会在后台生成一个PSVariable对象，这个对象不仅包含变量的值，也包含变量的其它信息，例如”只写保护”这样的描述。我们在声明一个变量时只是指明了它的名字和值，其实还有许多其他的属性。我们可以这样查看`a`变量所有的属性:
 
 ```bash
