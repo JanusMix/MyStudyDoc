@@ -1,12 +1,9 @@
-```kotlin
-package Test.kotlintest
-
 /**
  * Title:Kotlin初体验
  * Description:
- * Project: JanusMixTest
+ * Project: MyStudyDoc
  * Author: JanusMix
- * Create Time:2018/7/27 13:44
+ * Create Time:2018/07/27 16:23
  */
 //这相当于main函数
 fun main(args: Array<String>) {
@@ -30,8 +27,6 @@ fun main(args: Array<String>) {
     println(person2)
     println(person1)
 
-
-
 }
 
 /**
@@ -47,4 +42,3 @@ class Person(val name: String,var age: Int) {
         return "name: ${name} , age: ${age}"
     }
 }
-```

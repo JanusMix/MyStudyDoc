@@ -1,0 +1,19 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+#idea files
+.idea/
+overlays/
+*.log
+*.epoch
+*.lck
+/logs
+.studio
+
+# Package Files #
+*.jar
+*.war
+*.ear
