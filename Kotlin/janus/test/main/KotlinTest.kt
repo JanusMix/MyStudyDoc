@@ -1,3 +1,12 @@
+package janus.test.main
+
+import janus.test.config.RGBColor
+import janus.test.config.SimpleColor
+import janus.test.util.getMnemonic
+import janus.test.util.mix
+import janus.test.util.mixOptimized
+import java.util.Random
+
 /**
  * Title:Kotlin初体验
  * Description:
@@ -27,6 +36,17 @@ fun main(args: Array<String>) {
     println(person2)
     println(person1)
 
+    //使用导入的Java包
+    val random = Random()
+    println(random.nextInt(10))
+
+    //调用枚举类中的方法
+    println(RGBColor.RED.rgb())
+
+    //支持组件中的方法
+    println(getMnemonic(SimpleColor.VIOLET))
+    println(mix(SimpleColor.YELLOW, SimpleColor.RED))
+    println(mixOptimized(SimpleColor.YELLOW, SimpleColor.RED))
 }
 
 /**
