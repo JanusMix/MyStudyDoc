@@ -1,8 +1,9 @@
 在进行检索前我们首先要有数据。
 
-LogStash日志搜集工具
+## LogStash日志搜集工具
 LogStash几乎是与ES配套使用的一个玩意，它的官方推荐用法是从服务器中抓取日志发送到ES中，然后使用Kibana进行日志的监控，也就是著名的ELK架构。后来有人制作了jdbc-input的插件使LogStash可以进行数据库记录的抓取，逐渐流行后LogStash在后续版本升级中内置了这个插件，我们这次也是使用这个插件来操作数据库。
-先看一下社群现在LogStash配置文件：
+
+先看一下我们现在LogStash测试配置文件：
 
 ```
 // 数据输入
@@ -94,8 +95,9 @@ sql文件中就写上你想执行的sql就行了。是不是很简单。
  - 第二个input进行数据更新，在帖子表中加入了一个触发器，当某些我们关注的字段进行更新时会在另一张表cloud_search_threadTrigger中记录tid和updateTime，这个input就会从这个表中取上次执行到现在这个时间段更新过的tid把它们的字段全查出来发往ES，对于ES来说更新就是插入，这样就完成了老数据的更新。
  - 访问发往ES的数据可以通过 http://10.159.37.226:9200/testcommunityindex/doc/_search?pretty 来查看
 
-ES全文搜索引擎
+## ES全文搜索引擎
 社群的全文检索引擎使用的是当前火热的ElasticSearch(以下简称ES)，它是一个使用Java开发的基于Lucene(Apache的一个开源全文搜索引擎工具包)的分布式检索服务器，设计用于云计算，安装十分简单，可以不断线进行服务器集群的扩展，稳定性很高，现在Gayhub、Wikipedia、StackOverflow等超级牛逼的公司已经把他们的搜索引擎换成了ES或者用了ES的组件，可见ES的强大。如果对ES内部运作原理感兴趣可以读一下官方文档，中文版，很不错。 https://www.elastic.co/guide/cn/elasticsearch/guide/current/index.html
+
 ES的概念简单的说一下，一台服务器成为一个节点(node)，多个节点成为一个集群(cluster)，如果想要在线往集群中加node，那么
  - 买台服务器，装上ES，把配置文件的cluster.name写的和别的那些一样，ES就会自动咻！到这个node，把它并入集群了，原理见  https://www.elastic.co/guide/cn/elasticsearch/guide/current/important-configuration-changes.html#unicast
 ES的主旨是随时可用和按需扩容，水平扩容和垂直扩容，说大白话就是多买服务器和买好服务器。
@@ -106,10 +108,11 @@ ES的配置文件基本上就是些，声明集群名，节点名，端口号，
  - 分片状态 http://10.159.37.226:9200/_cat/shards?v
  - index状态 http://10.159.37.226:9200/_cat/indices?pretty
  - 所有index的字段mapping http://10.159.37.226:9200/_mapping?pretty
+
 打了一堆基本原理想想还是算了，我说的哪有官方说的好，想知道去翻书吧，我就用大白话说下易懂的，虽然不能帮助你了解运作方式，但是能迅速入门并可以进行一些基本的操作。index其实就相当于一台服务器的一个库，type就是一个表。 http://10.159.37.219:9200/_search?pretty 查看一下所有index的所有type的所有文档，恩，ES把数据库的一条记录称为一个文档。有时你可能看到分片的概念，其实是ES把一个index的数据分别放在不同的分片中，检索的时候从每个分片中取可以提升速度,这个对用户而言是透明的不懂也没事，如果你看过美剧硅谷会对这东西有更好的了解。
 如果想要对ES进行索引文档的种种操作，可以直接在服务器用RESTful的方式进行操作，如curl -X PUT '10.159.37.219:9200/myIndex' 来创建一个index，同理DELETE删除等。
 
-ES提供的JavaApi
+## ES提供的JavaApi
 有了数据我们就可以在项目中进行搜索了！ES的检索比较特别，要求在GET请求中带有数据体，返回的格式都是JSON，你可以用curl在服务器里进行简单的检索。
 ES提供了很全面的JavaApi，但是由于版本更新速度很快，你在网上找到的大部分都是一些老版本的Api，现在根本不能用，在老夫踩了一万个坑之后吐血整理了一份基于最新版本6.2的Api可以让你迅速进行问题的修复和扩展。
  
@@ -255,4 +258,4 @@ for(SearchHithit:hits){
 基本用法demo中都已经涉及了。返回的list就是我们熟悉的数据结构了。
 偶对返回的list中也有坑，Date类型的数据ES中存的是XMLSchema的类型，用SimpleDateFormat把format设置成" yyyy-MM-dd'T'HH:mm:ss.SSS'Z' "就行了。
 																
-																All Rights Reserved By Author ： JanusMix
+						All Rights Reserved By Author ： JanusMix
