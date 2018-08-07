@@ -10,7 +10,8 @@ import janus.test.config.SimpleColor
  * Create Time:2018/8/1 16:37
  */
 /**
- * 获取颜色的快速记忆词汇。when相当于Java中的switch，但是不用写break
+ * 获取颜色的快速记忆词汇（源于美国儿童颜色的记忆口诀）
+ * ！when相当于switch，但是不用写break
  */
 fun getMnemonic(color: SimpleColor) =
         when (color) {      //传入的是枚举类，不列举完所有情况会编译器报错；如果只想处理几种枚举情况，最后用else结束

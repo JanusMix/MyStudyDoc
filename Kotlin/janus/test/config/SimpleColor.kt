@@ -15,7 +15,6 @@ enum class SimpleColor {
     BLUE,
     INDIGO,
     VIOLET
-
 }
 
 
