@@ -9,4 +9,4 @@ import janus.test.`interface`.IExpr
  * Author: JanusMix
  * Create Time:2018/8/7 13:54
  */
-class Num(val value : Int) : IExpr
+class Num(val value: Int) : IExpr

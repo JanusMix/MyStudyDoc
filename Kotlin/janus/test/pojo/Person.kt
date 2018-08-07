@@ -7,8 +7,8 @@ package janus.test.pojo
  * Author: JanusMix
  * Create Time:2018/8/7 13:59
  */
-class Person(val name: String,var age: Int) {
-    val isAdult : Boolean
+class Person(val name: String, var age: Int) {
+    val isAdult: Boolean
         get() {     //自定义访问器
             return age > 18
         }

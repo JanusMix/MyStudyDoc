@@ -30,8 +30,8 @@ fun getMnemonic(color: SimpleColor) =
  * when表达式的实参可以是任何对象
  * ！效率会比较低，每次调用会生成多个Set实例
  * */
-fun mix(c1 : SimpleColor, c2 : SimpleColor) =
-        when  (setOf(c1, c2)) {
+fun mix(c1: SimpleColor, c2: SimpleColor) =
+        when (setOf(c1, c2)) {
             setOf(SimpleColor.RED, SimpleColor.YELLOW) -> SimpleColor.ORANGE
             else -> throw Exception("Dirty color")
         }
@@ -40,7 +40,7 @@ fun mix(c1 : SimpleColor, c2 : SimpleColor) =
  * 不带参数的when，接收任意的bool表达式
  * ！可读性差了些，但是提高了性能
  */
-fun mixOptimized(c1 : SimpleColor, c2 : SimpleColor) =
+fun mixOptimized(c1: SimpleColor, c2: SimpleColor) =
         when {
             (c1 == SimpleColor.RED && c2 == SimpleColor.YELLOW) ||
                     (c1 == SimpleColor.YELLOW && c2 == SimpleColor.RED) -> SimpleColor.ORANGE

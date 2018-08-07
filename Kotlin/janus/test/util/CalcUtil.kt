@@ -20,31 +20,31 @@ fun eval(e: IExpr): Int =
 //    if (e is Sum)
 //        return eval(e.right) + eval(e.left)
 //    throw IllegalArgumentException("Unknown expression")
-    when (e) {
-        is Num ->
-            e.value
-        is Sum ->
-            eval(e.right) + eval(e.left)
-        else ->
-            throw IllegalArgumentException("Unknown expression")
-    }
+        when (e) {
+            is Num ->
+                e.value
+            is Sum ->
+                eval(e.right) + eval(e.left)
+            else ->
+                throw IllegalArgumentException("Unknown expression")
+        }
 
 /**
  * 是否是字母
  */
-fun isLetter(c : Char) = c in 'a'..'z' || c in 'A'..'Z'
+fun isLetter(c: Char) = c in 'a'..'z' || c in 'A'..'Z'
 
 /**
  * 是否不是数字
  */
-fun isNotDigit(c : Char) = c !in '0'..'9'
+fun isNotDigit(c: Char) = c !in '0'..'9'
 
 /**
  * 识别字符
  * !可以将in所谓when的分支
  */
-fun recognize(c : Char) =  when (c) {
-        in '0'..'9' -> "It's a digit!"
-        in 'a'..'z',in 'A'..'Z' -> "It's a letter"
-        else -> "I don't know"
-    }
+fun recognize(c: Char) = when (c) {
+    in '0'..'9' -> "It's a digit!"
+    in 'a'..'z', in 'A'..'Z' -> "It's a letter"
+    else -> "I don't know"
+}

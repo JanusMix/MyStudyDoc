@@ -9,4 +9,4 @@ import janus.test.`interface`.IExpr
  * Author: JanusMix
  * Create Time:2018/8/7 13:53
  */
-class Sum (val left : IExpr, val right : IExpr) : IExpr
+class Sum(val left: IExpr, val right: IExpr) : IExpr
