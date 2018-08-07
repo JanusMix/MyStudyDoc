@@ -2,10 +2,11 @@ package janus.test.main
 
 import janus.test.config.RGBColor
 import janus.test.config.SimpleColor
-import janus.test.util.getMnemonic
-import janus.test.util.mix
-import janus.test.util.mixOptimized
-import java.util.Random
+import janus.test.pojo.Num
+import janus.test.pojo.Person
+import janus.test.pojo.Sum
+import janus.test.util.*
+import java.util.*
 
 /**
  * Title:Kotlin初体验
@@ -47,18 +48,32 @@ fun main(args: Array<String>) {
     println(getMnemonic(SimpleColor.VIOLET))
     println(mix(SimpleColor.YELLOW, SimpleColor.RED))
     println(mixOptimized(SimpleColor.YELLOW, SimpleColor.RED))
-}
 
-/**
- * 实体类，不可变name，可变年龄
- */
-class Person(val name: String,var age: Int) {
-    val isAdult : Boolean
-        get() {     //自定义访问器
-            return age > 18
-        }
+    //求(1+2)+4
+    println(eval(Sum(Sum(Num(1), Num(2)), Num(4))))
 
-    override fun toString(): String {
-        return "name: ${name} , age: ${age}"
+    for (i in 1..10)    //区间迭代
+        print("$i ")
+    println()
+    for (i in 10 downTo 1 step 2)   //带步长的区间
+        print("$i ")
+    println()
+    for (i in 1 until 10)   //右边是开区间，其实等同于1..9，但是清晰的表达了意图
+        print("$i ")
+    println()
+
+    val binaryReps = TreeMap<Char, String>()    //按key排序的map
+
+    for (i in 'A'..'Z') {   //..还可以生成字符串区间
+        val binary = Integer.toBinaryString(i.toInt())
+        binaryReps[i] = binary  //可以使用map[key] = value更新值，相当于put
     }
+
+    for ((letter, binary) in binaryReps)    //map的展开方式
+        println("$letter = $binary ")
+
+    println(isLetter('%'))
+    println(isNotDigit('5'))
+    println(recognize('@'))
+
 }
