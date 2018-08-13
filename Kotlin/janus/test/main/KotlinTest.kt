@@ -76,4 +76,21 @@ fun main(args: Array<String>) {
     println(isNotDigit('5'))
     println(recognize('@'))
 
+    val number = 101
+    //throw结构可以作为表达式使用，不区分受检异常和不受检异常
+    val percentage =
+            if (number in 0..100)
+                number
+            else
+                throw IllegalArgumentException("A percentage value must be between 0 and 100: $number")
+
+    //try也可以作为表达式
+    val tryNumber = try {
+        Integer.parseInt(trueFlag)
+    } catch (e : NumberFormatException) {
+        return
+    }
+
+
+
 }
