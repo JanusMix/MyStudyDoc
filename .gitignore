@@ -12,6 +12,7 @@ overlays/
 *.lck
 /logs
 .studio
+.out/
 
 # Package Files #
 *.jar
