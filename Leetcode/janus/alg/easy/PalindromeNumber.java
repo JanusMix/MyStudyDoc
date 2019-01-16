@@ -2,7 +2,7 @@ package janus.alg.easy;
 
 /**
  * Title:Palindrome Number
- * Description:
+ * Description:Determine whether an integer is a palindrome. An integer is a palindrome when it reads the same backward as forward.
  * Project: MyStudyDoc
  * Author: JanusMix
  * Create Time:2018/12/13 14:49
