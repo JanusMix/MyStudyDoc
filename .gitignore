@@ -13,6 +13,7 @@ overlays/
 /logs
 .studio
 .out/
+*.class
 
 # Package Files #
 *.jar
